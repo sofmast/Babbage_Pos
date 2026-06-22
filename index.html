@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>POS System</title>
+
+
+<link rel="stylesheet" href="CSS/styles.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<header class="topbar">
+
+<button id="menuBtn">
+<i class="fas fa-bars"></i>
+</button>
+
+<div class="logo">
+<p class="babage">BABAGE</p>
+<p class="babage">pos</p>
+
+</div>
+
+<div class="clockdiv">
+    <p id="clock"></p>
+    <p class="developer"> By Babbage Zambia</p>
+    <p class="developer"> +260772250680</p>
+</div>
+
+</header>
+
+<div class="container">
+
+<aside class="sidebar" id="sidebar">
+    <div class="dev-brand">
+<p class="babage">BABBAGE</p>
+<p class="babage">pos</p>
+
+</div>
+
+<nav>
+
+<a href="sales.html">
+
+<i class="fas fa-history"></i>
+
+Sales History
+
+</a>
+
+<a href="products.html">
+<i class="fas fa-box"></i>
+Products
+</a>
+<a href="#">
+<i class="fas fa-users"></i>
+Customers
+</a>
+<a href="purchase.html">
+<i class="fas fa-chart-line"></i>
+Purchase
+</a>
+<a href="reports.html">
+<i class="fas fa-chart-line"></i>
+Reports
+</a>
+
+<a href="#" id="settingsLink">
+    <i class="fas fa-cog"></i>
+    Settings
+</a>
+
+<a href="addprods.html">
+<i class="fas fa-plus-circle"></i>
+Add Product
+</a>
+<a class="logout-btn" onclick="logoutUser()">
+    <i class="fa-solid fa-right-from-bracket" id="i"></i>
+    Logout
+</a>
+
+</nav>
+
+</aside>
+
+<main class="main">
+
+<section class="products">
+
+<div class="toolbar">
+
+<input
+type="text"
+placeholder="Search products..."
+id="search" class="search">
+
+<select id="categoryFilter">
+    <option value="all">All Categories</option>
+</select>
+
+</div>
+
+<div class="product-grid" id="productGrid">
+</div>
+
+</section>
+
+<section class="cart">
+
+<h2>Cart</h2>
+
+<div id="cartItems">
+
+<p class="empty">
+No products selected
+</p>
+
+</div>
+
+<div class="cart-footer">
+
+<h3>
+Total:
+<span id="total">
+K0.00
+</span>
+</h3>
+<button class="checkout" id="clearCartBtn" style="background-color: rgb(226, 226, 226); color: red;">
+Clear Cart
+</button>
+<button class="checkout"  id="checkoutBtn">
+Checkout
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+<!-- CHECKOUT MODAL -->
+
+<div class="modal" id="checkoutModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>Checkout</h2>
+
+            <button id="closeModal">
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="form-group">
+
+                <label>Total Amount</label>
+
+                <input
+                    type="text"
+                    id="checkoutTotal"
+                    readonly>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Cash Received</label>
+
+                <input
+                    type="number"
+                    id="cashReceived"
+                    placeholder="Enter amount">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Change</label>
+
+                <input
+                    type="text"
+                    id="changeAmount"
+                    readonly>
+
+            </div>
+
+            <button
+                id="completeSaleBtn"
+                class="complete-sale">
+
+                Complete Sale
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- RECEIPT MODAL -->
+
+<div class="modal" id="receiptModal">
+
+    <div class="modal-content">
+
+        <div id="receiptContent">
+
+            <div class="receipt-header">
+
+                <h2 id="receiptBusinessName">
+                    MY STORE
+                </h2>
+
+                <p id="receiptAddress"></p>
+
+                <p id="receiptPhone"></p>
+
+                <hr>
+
+                <p>
+                    Receipt No:
+                    <span id="receiptNo"></span>
+                </p>
+
+                <p>
+                    Date:
+                    <span id="receiptDate"></span>
+                </p>
+
+            </div>
+
+            <div id="receiptItems"></div>
+
+            <hr>
+
+            <div class="receipt-totals">
+
+                <p>
+                    Total:
+                    <strong id="receiptTotal"></strong>
+                </p>
+
+                <p>
+                    Paid:
+                    <strong id="receiptPaid"></strong>
+                </p>
+
+                <p>
+                    Change:
+                    <strong id="receiptChange"></strong>
+                </p>
+
+            </div>
+
+            <hr>
+
+            <p class="receipt-footer">
+
+                Thank you for your purchase.
+
+            </p>
+
+        </div>
+
+        <div class="receipt-actions">
+
+            <button id="printReceiptBtn">
+
+                Print Receipt
+
+            </button>
+
+            <button id="closeReceiptBtn">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SETTINGS MODAL -->
+
+<div class="modal" id="settingsModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>Business Settings</h2>
+
+            <button id="closeSettingsBtn">
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="form-group">
+
+                <label>Business Name</label>
+
+                <input
+                    type="text"
+                    id="businessName">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Phone Number</label>
+
+                <input
+                    type="text"
+                    id="businessPhone">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Address</label>
+
+                <input
+                    type="text"
+                    id="businessAddress">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Currency</label>
+
+                <input
+                    type="text"
+                    id="businessCurrency"
+                    placeholder="ZMW">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Receipt Footer</label>
+
+                <textarea
+                    id="receiptFooter"
+                    rows="4"></textarea>
+
+            </div>
+
+            <button
+                class="complete-sale"
+                id="saveSettingsBtn">
+
+                Save Settings
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ========================================
+     GLOBAL MESSAGE MODAL
+======================================== -->
+
+<div
+class="modal"
+id="messageModal">
+
+    <div class="modal-content message-box">
+
+        <h3 id="messageTitle">
+
+            Notification
+
+        </h3>
+
+        <p id="messageText">
+
+        </p>
+
+        <div class="message-actions">
+
+            <button
+            id="messageCancel">
+
+                Cancel
+
+            </button>
+
+            <button
+            id="messageOk">
+
+                OK
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<script src="JS/lOut.js"></script>
+<script src="JS/products.js"></script>
+<script src="JS/app.js"></script>
+<!--<script src="JS/products.js"></script>-->
+</body>
+</html>

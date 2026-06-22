@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Purchase History</title>
+
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* =====================================
+   RESET
+===================================== */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:
+"Segoe UI",
+Tahoma,
+sans-serif;
+}
+
+body{
+background:#f1f5f9;
+padding:20px;
+min-height:100vh;
+}
+
+/* =====================================
+   CONTAINER
+===================================== */
+
+.container{
+max-width:1300px;
+margin:auto;
+}
+
+/* =====================================
+   HEADER
+===================================== */
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+gap:15px;
+}
+
+.header h1{
+font-size:30px;
+color:#0f172a;
+}
+
+.header p{
+color:#64748b;
+font-size:14px;
+}
+
+.header a{
+background:#eb8525;
+color:white;
+text-decoration:none;
+padding:12px 18px;
+border-radius:10px;
+font-weight:600;
+}
+
+/* =====================================
+   CARD
+===================================== */
+
+.card{
+background:white;
+padding:20px;
+border-radius:18px;
+box-shadow:
+0 10px 30px
+rgba(0,0,0,.08);
+}
+
+/* =====================================
+   TOOLBAR
+===================================== */
+
+.toolbar{
+margin-bottom:20px;
+}
+
+.toolbar input{
+width:100%;
+padding:14px;
+border:1px solid #d1d5db;
+border-radius:12px;
+font-size:15px;
+}
+
+/* =====================================
+   TABLE
+===================================== */
+
+.table-wrapper{
+overflow-x:auto;
+}
+
+.purchase-table{
+width:100%;
+border-collapse:collapse;
+}
+
+.purchase-table th{
+background:#f8fafc;
+padding:14px;
+text-align:left;
+font-size:14px;
+border-bottom:1px solid #e2e8f0;
+}
+
+.purchase-table td{
+padding:14px;
+border-bottom:1px solid #e2e8f0;
+font-size:14px;
+}
+
+.purchase-table tr:hover{
+background:#fafafa;
+}
+
+/* =====================================
+   ACTIONS
+===================================== */
+
+.actions{
+display:flex;
+gap:10px;
+}
+
+.action-btn{
+border:none;
+width:35px;
+height:35px;
+border-radius:50%;
+cursor:pointer;
+}
+
+.view-btn{
+background:#dbeafe;
+color:#2563eb;
+}
+
+.print-btn{
+background:#dcfce7;
+color:#16a34a;
+}
+
+.delete-btn{
+background:#fee2e2;
+color:#dc2626;
+}
+
+/* =====================================
+   MODAL
+===================================== */
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:
+rgba(0,0,0,.5);
+
+display:none;
+justify-content:center;
+align-items:center;
+padding:20px;
+z-index:999;
+}
+
+.modal.show{
+display:flex;
+}
+
+.modal-content{
+background:white;
+width:100%;
+max-width:700px;
+border-radius:20px;
+padding:25px;
+max-height:90vh;
+overflow-y:auto;
+}
+
+.modal-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.modal-header button{
+border:none;
+background:none;
+font-size:24px;
+cursor:pointer;
+}
+
+/* =====================================
+   PURCHASE DETAILS
+===================================== */
+
+.purchase-detail-item{
+display:flex;
+justify-content:space-between;
+padding:10px 0;
+border-bottom:1px solid #f1f5f9;
+}
+
+.purchase-total{
+margin-top:20px;
+padding-top:20px;
+border-top:2px solid #e2e8f0;
+font-size:20px;
+font-weight:bold;
+}
+
+/* =====================================
+   EMPTY
+===================================== */
+
+.empty{
+text-align:center;
+padding:40px;
+color:#94a3b8;
+}
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media(max-width:768px){
+
+.header{
+flex-direction:column;
+align-items:flex-start;
+}
+
+.header a{
+width:100%;
+text-align:center;
+}
+
+.purchase-table{
+font-size:12px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div>
+
+            <h1>
+                Purchase History
+            </h1>
+
+            <p>
+                Inventory stock-in records
+            </p>
+
+        </div>
+
+        <a href="purchase.html">
+
+            New Purchase
+
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <div class="toolbar">
+
+            <input
+            type="text"
+            id="searchPurchase"
+            placeholder="Search supplier...">
+
+        </div>
+
+        <div
+        id="purchaseHistory">
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- VIEW MODAL -->
+
+<div
+class="modal"
+id="purchaseModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                Purchase Details
+            </h2>
+
+            <button
+            id="closePurchaseModal">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <div
+        id="purchaseDetails">
+
+        </div>
+
+    </div>
+
+</div>
+<script src="JS/auth.js"></script>
+<script>
+    // =====================================
+// ELEMENTS
+// =====================================
+
+const purchaseHistory =
+document.getElementById(
+"purchaseHistory"
+);
+
+const searchPurchase =
+document.getElementById(
+"searchPurchase"
+);
+
+const purchaseModal =
+document.getElementById(
+"purchaseModal"
+);
+
+const purchaseDetails =
+document.getElementById(
+"purchaseDetails"
+);
+
+const closePurchaseModal =
+document.getElementById(
+"closePurchaseModal"
+);
+
+// =====================================
+// GET PURCHASES
+// =====================================
+
+function getPurchases(){
+
+return JSON.parse(
+
+localStorage.getItem(
+"pos_purchases"
+)
+
+) || [];
+
+}
+
+// =====================================
+// DELETE PURCHASE
+// =====================================
+
+function deletePurchase(id){
+
+let purchases =
+getPurchases();
+
+purchases =
+purchases.filter(
+
+purchase =>
+
+purchase.id !== id
+
+);
+
+localStorage.setItem(
+
+"pos_purchases",
+
+JSON.stringify(
+purchases
+)
+
+);
+
+renderPurchases();
+
+}
+
+// =====================================
+// VIEW PURCHASE
+// =====================================
+
+function viewPurchase(id){
+
+const purchase =
+getPurchases().find(
+
+p => p.id === id
+
+);
+
+if(!purchase) return;
+
+purchaseDetails.innerHTML = `
+
+<h3>
+${purchase.id}
+</h3>
+
+<p>
+Supplier:
+<strong>
+${purchase.supplier}
+</strong>
+</p>
+
+<p>
+Date:
+${new Date(
+purchase.date
+).toLocaleString()}
+</p>
+
+<hr><br>
+
+${purchase.items.map(item => `
+
+<div class="purchase-detail-item">
+
+<div>
+
+${item.name}
+
+</div>
+
+<div>
+
+${item.qty}
+×
+K${item.costPrice}
+
+</div>
+
+</div>
+
+`).join("")}
+
+<div class="purchase-total">
+
+Total:
+K${purchase.total.toFixed(2)}
+
+</div>
+
+`;
+
+purchaseModal
+.classList
+.add("show");
+
+}
+
+// =====================================
+// PRINT PURCHASE
+// =====================================
+
+function printPurchase(id){
+
+const purchase =
+getPurchases().find(
+
+p => p.id === id
+
+);
+
+if(!purchase) return;
+
+const win =
+window.open(
+"",
+"_blank"
+);
+
+win.document.write(`
+
+<h2>
+Purchase Receipt
+</h2>
+
+<p>
+Reference:
+${purchase.id}
+</p>
+
+<p>
+Supplier:
+${purchase.supplier}
+</p>
+
+<p>
+Date:
+${new Date(
+purchase.date
+).toLocaleString()}
+</p>
+
+<hr>
+
+${purchase.items.map(item => `
+
+<p>
+
+${item.name}
+
+-
+
+${item.qty}
+
+×
+
+K${item.costPrice}
+
+</p>
+
+`).join("")}
+
+<hr>
+
+<h3>
+
+Total:
+K${purchase.total.toFixed(2)}
+
+</h3>
+
+`);
+
+win.print();
+
+}
+
+// =====================================
+// RENDER
+// =====================================
+
+function renderPurchases(){
+
+const purchases =
+getPurchases();
+
+if(
+purchases.length === 0
+){
+
+purchaseHistory.innerHTML = `
+
+<p class="empty">
+
+No purchases found
+
+</p>
+
+`;
+
+return;
+
+}
+
+purchaseHistory.innerHTML = `
+
+<div class="table-wrapper">
+
+<table
+class="purchase-table">
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Reference</th>
+
+<th>Supplier</th>
+
+<th>Items</th>
+
+<th>Total</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${purchases.map(purchase => `
+
+<tr>
+
+<td>
+
+${new Date(
+purchase.date
+).toLocaleDateString()}
+
+</td>
+
+<td>
+
+${purchase.id}
+
+</td>
+
+<td>
+
+${purchase.supplier}
+
+</td>
+
+<td>
+
+${purchase.items.length}
+
+</td>
+
+<td>
+
+K${purchase.total.toFixed(2)}
+
+</td>
+
+<td>
+
+<div class="actions">
+
+<button
+class="action-btn view-btn"
+onclick="viewPurchase('${purchase.id}')">
+
+👁
+
+</button>
+
+<button
+class="action-btn print-btn"
+onclick="printPurchase('${purchase.id}')">
+
+🖨
+
+</button>
+
+<button
+class="action-btn delete-btn"
+onclick="deletePurchase('${purchase.id}')">
+
+🗑
+
+</button>
+
+</div>
+
+</td>
+
+</tr>
+
+`).join("")}
+
+</tbody>
+
+</table>
+
+</div>
+
+`;
+
+}
+
+// =====================================
+// SEARCH
+// =====================================
+
+if(searchPurchase){
+
+searchPurchase.addEventListener(
+
+"input",
+
+() => {
+
+const keyword =
+searchPurchase.value
+.toLowerCase();
+
+const purchases =
+getPurchases();
+
+const filtered =
+purchases.filter(
+
+purchase =>
+
+purchase.supplier
+.toLowerCase()
+.includes(keyword)
+
+||
+
+purchase.id
+.toLowerCase()
+.includes(keyword)
+
+);
+
+renderFiltered(
+filtered
+);
+
+}
+
+);
+
+}
+
+function renderFiltered(data){
+
+if(data.length === 0){
+
+purchaseHistory.innerHTML = `
+
+<p class="empty">
+
+No matching purchases
+
+</p>
+
+`;
+
+return;
+
+}
+
+purchaseHistory.innerHTML = `
+
+<div class="table-wrapper">
+
+<table
+class="purchase-table">
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Reference</th>
+
+<th>Supplier</th>
+
+<th>Items</th>
+
+<th>Total</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${data.map(purchase => `
+
+<tr>
+
+<td>
+${new Date(
+purchase.date
+).toLocaleDateString()}
+</td>
+
+<td>
+${purchase.id}
+</td>
+
+<td>
+${purchase.supplier}
+</td>
+
+<td>
+${purchase.items.length}
+</td>
+
+<td>
+K${purchase.total.toFixed(2)}
+</td>
+
+<td>
+
+<div class="actions">
+
+<button
+class="action-btn view-btn"
+onclick="viewPurchase('${purchase.id}')">
+
+👁
+
+</button>
+
+<button
+class="action-btn print-btn"
+onclick="printPurchase('${purchase.id}')">
+
+🖨
+
+</button>
+
+<button
+class="action-btn delete-btn"
+onclick="deletePurchase('${purchase.id}')">
+
+🗑
+
+</button>
+
+</div>
+
+</td>
+
+</tr>
+
+`).join("")}
+
+</tbody>
+
+</table>
+
+</div>
+
+`;
+
+}
+
+// =====================================
+// CLOSE MODAL
+// =====================================
+
+closePurchaseModal
+.addEventListener(
+
+"click",
+
+() => {
+
+purchaseModal
+.classList
+.remove("show");
+
+}
+
+);
+
+// =====================================
+// INITIALIZE
+// =====================================
+
+renderPurchases();
+</script>
+
+</body>
+
+</html>

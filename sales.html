@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>Sales History</title>
+
+<link rel="stylesheet"
+href="CSS/sales-history.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>
+
+            Sales History
+
+        </h1>
+
+        <a
+            href="index.html"
+            class="back-btn">
+
+            Back To POS
+
+        </a>
+
+    </div>
+
+
+    <div class="filters">
+
+        <input
+            type="text"
+            id="searchSale"
+            placeholder="Search Receipt">
+
+    </div>
+
+    <div class="stats">
+
+        <div class="card">
+
+            <h3>
+
+                Transactions
+
+            </h3>
+
+            <p id="totalTransactions">
+                0
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>
+
+                Revenue
+
+            </h3>
+
+            <p id="totalRevenue">
+                K0.00
+            </p>
+
+        </div>
+
+        <div class="card">
+
+    <h3>
+
+        Today's Sales
+
+    </h3>
+
+    <p id="todaySales">
+
+        K0.00
+
+    </p>
+
+</div>
+
+<div class="card">
+
+    <h3>
+
+        Monthly Sales
+
+    </h3>
+
+    <p id="monthlySales">
+
+        K0.00
+
+    </p>
+
+</div>
+
+    </div>
+
+    <div id="salesContainer">
+
+    </div>
+
+</div>
+
+<!--CONFIRMATION MODAL-->
+
+<div
+    class="confirm-modal"
+    id="confirmModal">
+
+    <div class="confirm-box">
+
+        <h3 id="confirmTitle">
+
+            Confirm Action
+
+        </h3>
+
+        <p id="confirmMessage">
+
+            Are you sure?
+
+        </p>
+
+        <div class="confirm-actions">
+
+            <button
+                id="confirmCancel">
+
+                Cancel
+
+            </button>
+
+            <button
+                id="confirmOk">
+
+                OK
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!--END OF CONFIRMATION MODAL-->
+<script src="JS/auth.js"></script>
+<script src="JS/sales-history.js"></script>
+
+</body>
+</html>
