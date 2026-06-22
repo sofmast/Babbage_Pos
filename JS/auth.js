@@ -21,7 +21,7 @@ function logoutUser(){
     );
 
     window.location.href =
-    "login.html";
+    "welcome.html";
 }
 
 // =====================================
@@ -49,7 +49,7 @@ function requireAuth(){
     if(!user){
 
         window.location.replace(
-            "login.html"
+            "welcome.html"
         );
 
         return false;
