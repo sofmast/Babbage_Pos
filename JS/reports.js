@@ -193,43 +193,87 @@ document
     "click",
     exportExcel
 );
-
 function exportExcel() {
 
     const workbook =
         XLSX.utils.book_new();
 
-    /* =====================
-       SALES SUMMARY
-    ===================== */
+    /* =========================
+       SUMMARY SHEET
+    ========================= */
 
-    const salesSummary = [];
+    const totalSales =
+        sales.length;
 
-    sales.forEach(sale => {
+    const revenue =
+        sales.reduce(
+            (sum,sale) =>
+                sum + Number(sale.total || 0),
+            0
+        );
 
-        salesSummary.push({
+    const totalCost =
+        sales.reduce(
+            (sum,sale) =>
+                sum + Number(sale.costTotal || 0),
+            0
+        );
 
-            Receipt: sale.id,
+    const totalProfit =
+        sales.reduce(
+            (sum,sale) =>
+                sum + Number(sale.profit || 0),
+            0
+        );
 
-            Date: sale.date,
+    const summaryData = [
 
-            Items: sale.items.length,
+        {
+            METRIC:
+                "Total Transactions",
 
-            Total: sale.total,
+            VALUE:
+                totalSales
+        },
 
-            Paid: sale.paid,
+        {
+            METRIC:
+                "Revenue",
 
-            Change: sale.change
+            VALUE:
+                revenue
+        },
 
-        });
+        {
+            METRIC:
+                "Cost",
 
-    });
+            VALUE:
+                totalCost
+        },
+
+        {
+            METRIC:
+                "Profit",
+
+            VALUE:
+                totalProfit
+        }
+
+    ];
 
     const summarySheet =
-
         XLSX.utils.json_to_sheet(
-            salesSummary
+            summaryData
         );
+
+    summarySheet["!cols"] = [
+
+        { wch: 30 },
+
+        { wch: 20 }
+
+    ];
 
     XLSX.utils.book_append_sheet(
 
@@ -237,51 +281,78 @@ function exportExcel() {
 
         summarySheet,
 
-        "Sales Summary"
+        "Summary"
 
     );
 
-    /* =====================
-       SALES DETAILS
-    ===================== */
+    /* =========================
+       SALES SHEET
+    ========================= */
 
-    const details = [];
+    const salesRows = [];
+
+    let rowId = 1;
 
     sales.forEach(sale => {
 
         sale.items.forEach(item => {
 
-            details.push({
+            const qty =
+                Number(item.qty || 0);
 
-                Receipt: sale.id,
+            const cost =
+                Number(item.costPrice || 0);
 
-                Date: sale.date,
+            const price =
+                Number(item.price || 0);
 
-                Product: item.name,
+            const costValue =
+                qty * cost;
 
-                Qty: item.qty,
+            const salesValue =
+                qty * price;
 
-                CostPrice:
-                    item.costPrice,
+            const profit =
+                salesValue -
+                costValue;
 
-                SellingPrice:
-                    item.price,
+            salesRows.push({
 
-                Revenue:
-                    item.price *
-                    item.qty,
+                ID:
+                    rowId++,
 
-                Profit:
+                SALE_ID:
+                    sale.id,
 
-                    (
-                        item.price -
-
-                        item.costPrice
+                DATE:
+                    new Date(
+                        sale.date
                     )
+                    .toLocaleString(),
 
-                    *
+                CATEGORY:
+                    item.category,
 
-                    item.qty
+                ITEM:
+                    item.name,
+
+                QTY:
+                    qty,
+
+                COST_PRICE:
+                    cost,
+
+                UNIT_PRICE:
+                    price,
+
+                COST_VALUE:
+                    costValue,
+
+                SALES_VALUE:
+                    salesValue,
+
+                PROFIT:
+                    profit
 
             });
 
@@ -289,58 +360,165 @@ function exportExcel() {
 
     });
 
-    const detailSheet =
+    /* TOTAL ROW */
 
+    salesRows.push({
+
+        ID: "",
+
+        SALE_ID: "",
+
+        DATE: "",
+
+        CATEGORY: "",
+
+        ITEM: "TOTALS",
+
+        QTY:
+            salesRows.reduce(
+                (s,r) =>
+                    s + Number(r.QTY || 0),
+                0
+            ),
+
+        COST_PRICE: "",
+
+        UNIT_PRICE: "",
+
+        COST_VALUE:
+            salesRows.reduce(
+                (s,r) =>
+                    s +
+                    Number(
+                        r.COST_VALUE || 0
+                    ),
+                0
+            ),
+
+        SALES_VALUE:
+            salesRows.reduce(
+                (s,r) =>
+                    s +
+                    Number(
+                        r.SALES_VALUE || 0
+                    ),
+                0
+            ),
+
+        PROFIT:
+            salesRows.reduce(
+                (s,r) =>
+                    s +
+                    Number(
+                        r.PROFIT || 0
+                    ),
+                0
+            )
+
+    });
+
+    const salesSheet =
         XLSX.utils.json_to_sheet(
-            details
+            salesRows
         );
+
+    salesSheet["!cols"] = [
+
+        { wch: 8 },   // ID
+
+        { wch: 25 },  // SALE ID
+
+        { wch: 25 },  // DATE
+
+        { wch: 20 },  // CATEGORY
+
+        { wch: 35 },  // ITEM
+
+        { wch: 10 },  // QTY
+
+        { wch: 15 },  // COST
+
+        { wch: 15 },  // PRICE
+
+        { wch: 15 },  // COST VALUE
+
+        { wch: 15 },  // SALES VALUE
+
+        { wch: 15 }   // PROFIT
+
+    ];
 
     XLSX.utils.book_append_sheet(
 
         workbook,
 
-        detailSheet,
+        salesSheet,
 
-        "Sales Details"
+        "Sales"
 
     );
 
-    /* =====================
-       INVENTORY
-    ===================== */
+    /* =========================
+       INVENTORY SHEET
+    ========================= */
 
-    const inventory =
+    const inventoryRows =
 
         products.map(product => ({
 
-            Product:
+            PRODUCT:
                 product.name,
 
-            Category:
+            CATEGORY:
                 product.category,
 
-            Stock:
-                product.stock,
+            STOCK:
+                Number(
+                    product.stock || 0
+                ),
 
-            CostPrice:
-                product.costPrice,
+            COST_PRICE:
+                Number(
+                    product.costPrice || 0
+                ),
 
-            SellingPrice:
-                product.price,
+            SELLING_PRICE:
+                Number(
+                    product.price || 0
+                ),
 
-            InventoryValue:
+            STOCK_VALUE:
 
-                product.stock *
+                Number(
+                    product.stock || 0
+                ) *
 
-                product.costPrice
+                Number(
+                    product.costPrice || 0
+                )
 
         }));
 
     const inventorySheet =
-
         XLSX.utils.json_to_sheet(
-            inventory
+            inventoryRows
         );
+
+    inventorySheet["!cols"] = [
+
+        { wch: 35 },
+
+        { wch: 20 },
+
+        { wch: 10 },
+
+        { wch: 15 },
+
+        { wch: 15 },
+
+        { wch: 15 }
+
+    ];
 
     XLSX.utils.book_append_sheet(
 
@@ -352,13 +530,97 @@ function exportExcel() {
 
     );
 
+    /* =========================
+       TOP PRODUCTS
+    ========================= */
+
+    const topProducts = {};
+
+    sales.forEach(sale => {
+
+        sale.items.forEach(item => {
+
+            if (
+                !topProducts[
+                    item.name
+                ]
+            ) {
+
+                topProducts[
+                    item.name
+                ] = {
+
+                    product:
+                        item.name,
+
+                    qty: 0,
+
+                    revenue: 0,
+
+                    profit: 0
+
+                };
+
+            }
+
+            topProducts[
+                item.name
+            ].qty += item.qty;
+
+            topProducts[
+                item.name
+            ].revenue +=
+
+                item.qty *
+                item.price;
+
+            topProducts[
+                item.name
+            ].profit +=
+
+                item.qty *
+
+                (
+                    item.price -
+                    item.costPrice
+                );
+
+        });
+
+    });
+
+    const topSheet =
+        XLSX.utils.json_to_sheet(
+
+            Object.values(
+                topProducts
+            )
+
+        );
+
+    XLSX.utils.book_append_sheet(
+
+        workbook,
+
+        topSheet,
+
+        "Top Products"
+
+    );
+
+    /* =========================
+       DOWNLOAD
+    ========================= */
+
     XLSX.writeFile(
 
         workbook,
 
-        `POS_Report_${new Date()
-        .toISOString()
-        .split("T")[0]}.xlsx`
+        `POS_REPORT_${
+            new Date()
+            .toISOString()
+            .split("T")[0]
+        }.xlsx`
 
     );
 
